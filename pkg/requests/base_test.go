@@ -376,6 +376,19 @@ func TestGetUserConfirmationNoConfirm(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestGetUserConfirmationEOF(t *testing.T) {
+	reader := bufio.NewReader(strings.NewReader(""))
+
+	rb := Base{}
+	rb.Method = http.MethodDelete
+	rb.autoConfirm = false
+
+	confirmed, err := rb.getUserConfirmation(reader)
+	require.False(t, confirmed)
+	require.Error(t, err)
+	require.Equal(t, "refusing to prompt on non-interactive input; pass --confirm to delete", err.Error())
+}
+
 func TestNormalizePath(t *testing.T) {
 	require.Equal(t, "/v1/charges", normalizePath("/v1/charges"))
 	require.Equal(t, "/v1/charges", normalizePath("v1/charges"))

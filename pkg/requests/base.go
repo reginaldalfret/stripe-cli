@@ -1046,6 +1046,9 @@ func (rb *Base) getUserConfirmation(reader *bufio.Reader) (bool, error) {
 
 		input, err := reader.ReadString('\n')
 		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return false, errorcategory.UserInputErrorf("refusing to prompt on non-interactive input; pass --confirm to delete")
+			}
 			return false, err
 		}
 
